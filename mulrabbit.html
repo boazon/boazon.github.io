@@ -26,6 +26,11 @@
             return processing.loadImage(url);
         }
 
+        var arcFn = processing.arc;
+        processing.arc = function(x, y, w, h, start, stop) {
+            arcFn(x, y, w, h, processing.radians(start), processing.radians(stop));
+        };
+      
         // use degrees rather than radians in rotate function
         var rotateFn = processing.rotate;
         processing.rotate = function (angle) {
