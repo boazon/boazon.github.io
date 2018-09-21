@@ -1,3 +1,177 @@
-<!DOCTYPE html>
 <html>
+<head>
+  <title>JavaScript</title>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    var canvas = document.getElementById("canvas");
+    var processing = new Processing(canvas, function(processing) {
+        processing.size(600, 600);
+        processing.background(0xFFF);
+
+        var mouseIsPressed = false;
+        processing.mousePressed = function () { mouseIsPressed = true; };
+        processing.mouseReleased = function () { mouseIsPressed = false; };
+
+        var keyIsPressed = false;
+        processing.keyPressed = function () { keyIsPressed = true; };
+        processing.keyReleased = function () { keyIsPressed = false; };
+
+        function getImage(s) {
+            var url = "https://www.kasandbox.org/programming-images/" + s + ".png";
+            processing.externals.sketch.imageCache.add(url);
+            return processing.loadImage(url);
+        }
+
+        // use degrees rather than radians in rotate function
+        var rotateFn = processing.rotate;
+        processing.rotate = function (angle) {
+            rotateFn(processing.radians(angle));
+        };
+
+        with (processing) {
+
+
+            var ranking = [
+    {name: "boazon",score: 2621, medel: "gold"},
+    {name: "dad",score: 439, medel: "silver"},
+    {name: "mom", score: 393, medel: "bronze"}
+];
+
+var writeProduct = function(i, j) {
+    text(i * j, i * 40 + 15, j * 30 + 20 );
+};
+var textColor = color(112, 22, 108);
+var lastCol = 1;
+var lastRow = 1;
+var l=10;
+var a = floor(random(2, l));
+var b = floor(random(2, l));
+var score = 0;
+var life = 3;
+//var anser = a * b;
+var rabbit = function(x, y, size) {
+    /**fill(107, 71, 0);
+    ellipse(x, y, size, 22);
+    stroke(5, 2, 5);
+    strokeWeight(5);
+    point(x + size-83,y - size/20);
+    strokeWeight(1);
+    stroke(0, 0, 0);
+    fill(255, 255, 255, 250);**/
+    
+    
+    fill(255, 255, 255);
+    arc(x + 4, y + 80, 30, 30, -4, 288);
+    noFill();
+    image(getImage("creatures/Winston"), x, y, 100, 100);
+    arc(x+15, y - 3, 30, -30, 180, 360);
+    arc(x + 11, y - 3, 23, -77, 100, 180);
+    arc(x + 18, y + -1, 24, -86, 3, 92);
+    arc(x + 14.5, y - 42, 10, 10, 180, 360);
+    //right ear
+    arc(x+89, y - 3, 30, -30, 180, 360);
+    arc(x + 85, y - 3, 23, -77, 100, 180);
+    arc(x + 92, y + -1, 24, -86, 3, 92);
+    arc(x + 88.5, y - 42, 10, 10, 180, 360);
+    
+    fill(255, 184, 250);
+    noStroke();
+    ellipse(x + 14, y-18, 14, 35);
+    //right ear
+    ellipse(x + 88, y - 18, 14, 35);
+    fill(0, 0, 0);
+    stroke(0, 0, 0);
+    
+};
+var rabbitx = -1;
+var anser;
+var death = function() {
+    draw = function() {
+        background(255, 0, 0);
+        fill(255, 255, 255);
+        textSize(30);
+        text("game                  Over\nyour score was: " + score, width/4, 200, 500, 237);
+        textSize(15);
+        for (var j = 0; j < ranking.length;j++) {
+            //for (var i = 0;i < ranking[j].medel; i++) {
+                text("name:" + ranking[j].name+",\nscore:"+ranking[j].score+",\nmedal:" + ranking[j].medel+".\n", 231, j*69 + 30);
+            //}
+        
+        }
+    };
+};
+mouseClicked = function() {
+    var col = floor(mouseX / 40);
+    //lastCol = floor(mouseX / 40);
+    var row = floor(mouseY / 30);
+    if (col <= l && col >= 1&&row <= l && row >= 1) {
+        lastCol = col;
+        lastRow = row;
+    }
+    if (lastCol * lastRow === anser) {
+        rabbitx = -50;
+        a = floor(random(1, l));
+        b = floor(random(1, l));
+        score += 10;
+        textColor = color(34, 255, 0);
+        playSound(getSound("rpg/coin-jingle"));
+    }
+    else {
+        textColor = color(255, 0, 0);
+        score -= 1;
+        playSound(getSound("rpg/battle-magic"));
+    }
+};
+draw = function() {
+    background(255, 255, 255);
+    for (var j = 1; j <= l; j++) {
+        for (var i = 1; i <= l; i++) {
+            fill(201, 209, 39);
+            rect(i*40, j*30, 40, 30);
+            fill(112, 22, 108);
+            if (j === 1 || i === 1) {
+                writeProduct(i, j);
+            }
+        }
+        
+    }
+    //Program.restart();
+    rabbit(rabbitx, 487, 79);
+    anser = a * b;
+    //keyPressed = function() {
+        rabbitx += 1;
+        if (rabbitx >= 650) {
+            rabbitx = -50;
+            a = floor(random(1, l));
+            b = floor(random(1, l));
+            score --;
+            life -= 1;
+
+        }
+    //};
+    fill(0);
+    textSize(30);
+    text(a * b, 374, 372);
+    textSize(12);
+    fill(textColor);
+    writeProduct(lastCol, lastRow);
+    fill(0, 0, 0);
+    textSize(16);
+    text("score: " + score + "\n\nlives:" + life, 50, 362);
+    textSize(12);
+    if (life < 1) {
+        death();
+    }
+};
+
+
+
+        }
+        if (typeof draw !== 'undefined') processing.draw = draw;
+    });
+  </script>
+</body>
 </html>
