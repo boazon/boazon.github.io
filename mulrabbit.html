@@ -118,12 +118,12 @@ mouseClicked = function() {
         b = floor(random(1, l));
         score += 10;
         textColor = color(34, 255, 0);
-        playSound(getSound("rpg/coin-jingle"));
+        //playSound(getSound("rpg/coin-jingle"));
     }
     else {
         textColor = color(255, 0, 0);
         score -= 1;
-        playSound(getSound("rpg/battle-magic"));
+        //playSound(getSound("rpg/battle-magic"));
     }
 };
 draw = function() {
