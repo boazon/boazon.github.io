@@ -36,7 +36,12 @@
                 arcFn(x, y, w, h, processing.radians(start), processing.radians(stop));
             };
 
-
+           /* var getSoundFn = processing.getSound;
+            
+              var audio = new Audio('hit-whack.mp3');
+    audio.play();
+    playSound(getSound("hit-whack.mp3"));
+*/
             //processing.arc = function(x, y, radius, start)
             with (processing) {
                 
@@ -169,7 +174,9 @@ Man.prototype.draw = function() {
 
 };
 Man.prototype.hit = function() {
-    playSound(getSound("hit-whack.mp3"));
+    var audio = new Audio('hit-whack.mp3');
+    audio.play();
+    //playSound(getSound("hit-whack.mp3"));
     this.lives -= 1;
 };
 //man movement
