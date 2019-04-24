@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Multiplication Rabbit!!!</title>
+    <!--script src="http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script-->
+    <script src="processing.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var processing = new Processing(canvas, function (processing) {
+            processing.size(1000, 1000);
+            processing.background(0xFFF);
+            var mouseIsPressed = false;
+            processing.mousePressed = function () { mouseIsPressed = true; };
+            processing.mouseReleased = function () { mouseIsPressed = false; };
+            var keyIsPressed = false;
+            processing.keyPressed = function () { keyIsPressed = true; };
+            processing.keyReleased = function () { keyIsPressed = false; };
+            function getImage(s) {
+                var url = "https://www.kasandbox.org/programming-images/" + s + ".png";
+                processing.externals.sketch.imageCache.add(url);
+                return processing.loadImage(url);
+            }
+            // use degrees rather than radians in rotate function
+            var rotateFn = processing.rotate;
+            processing.rotate = function (angle) {
+                rotateFn(processing.radians(angle));
+            };
+
+            var arcFn = processing.arc;
+            processing.arc = function (x, y, w, h, start, stop) {
+                arcFn(x, y, w, h, processing.radians(start), processing.radians(stop));
+            };
+
+
+            //processing.arc = function(x, y, radius, start)
+            with (processing) {
+               /*********************************************************************************  * my 2th game, spikes!
+ * worked hard on it.hope you like it!
+ * rules:
+ ** don't collide spikes
+ ** dont get some dusty!
+ ** upgardes come later!!!!!
+*********************************************************************************/
+/*variables*/
+{
+var fantasy = createFont('fantasy');
+var bottom = 411;
+var keys = [];
+var score = 0;
+var dead = function() {
+    background(5, 5, 5);
+    fill(34, 255, 0);
+    textFont(fantasy,25);
+    text('you have failed.\nscore:'+floor(score)+'.',width/4,height/2);
+};
+/*
+the base object |
+                  \ / 
+*/
+var Objct = function(x, y) {
+    this.x = x;
+    this.y = y;
+};
+}
+/*stuff*/{
+var Enemy= function(x, y) {
+    Objct.call(this, x, y);
+};
+var Spike = function(x, y) {
+    Enemy.call(this, x, y);
+};
+Spike.prototype.draw = function() {
+    fill(209, 209, 209);
+    noStroke();
+    if (this.isOut) {
+    triangle(this.x, this.y, this.x - 12, this.y + 36, this.x, this.y + 36);
+    fill(112, 112, 112);
+    triangle(this.x, this.y, this.x + 12, this.y + 36, this.x, this.y + 36);
+    }
+    fill(255, 0, 0);
+    rect(this.x - 12, this.y + 36, 25, 4);
+};
+Spike.prototype.goLeft = function() {
+    this.x --;
+    if (this.x <= 0) {
+        this.x = width;
+        
+        this.setKind();
+    } 
+};
+Spike.prototype.setKind = function() {
+    var num = floor(random(0, 5));
+    if (num === 0) {
+        this.isOut = true;
+    }
+    else {
+        this.isOut = false;
+    }
+};
+Spike.prototype.collide = function(x, y, w, h) {
+    return this.isOut && this.x > x && this.x < x + w &&
+        this.y > y && this.y < y + h;
+};
+var Dust = function(x, y, size) {
+    Enemy.call(this, x, y);
+    this.size = size;
+    this.speed = random(2,3.9);
+};
+Dust.prototype.draw = function() {
+    var r = random(0, 250);
+    var g = random(0, 250);
+    var b = random(0, 250);
+    fill(r,g,b);
+    ellipse(this.x,this.y,this.size,this.size);
+    stroke(145, 75, 0);
+    noFill();
+    arc(this.x +19, this.y+9,14,-14,90,180);
+    arc(this.x, this.y+13,14,-14,90,180);
+};
+Dust.prototype.goLeft = function() {
+    this.x-= this.speed;
+    var r = random(0, 250);
+    var g = random(0, 250);
+    var b = random(0, 250);
+    if (this.x <= 0) {
+        this.x = width;
+        this.size = random(20, 50);
+        if(size < 35) {
+            this.speed = random(3,10);
+        }
+        else {
+            this.speed = random(1,3);
+        }
+    } 
+};
+Dust.prototype.collide = function(x, y, w, h) {
+    return this.x > x && this.x < x + w &&
+        this.y > y && this.y < y + h;
+};
+
+var Man = function(x, y, hair_color, name) {
+    Objct.call(this, x, y);
+    this.hair_color = hair_color;
+    this.name = name;
+    this.acc = 0.5;
+    this.speed = 0;
+    this.width = 45;
+    this.height = 45;
+    this.lives = 3;
+};
+Man.prototype.draw = function() {
+    fill(255, 217, 102);
+    rect(this.x, this.y, this.width, this.height);
+    fill(this.hair_color);
+    rect(this.x, this.y, this.width, 10);
+    triangle(this.x + (this.width + 11),this.y + 10,this.x + this.width,this.y,this.x + this.width,this.y + 10);
+    fill(0, 0, 0);
+    ellipse(this.x + 10,this.y + 16,8,8);
+    ellipse(this.x + 35,this.y + 16,8,8);
+
+};
+Man.prototype.hit = function() {
+    playSound(getSound("rpg/hit-whack"));
+    this.lives -= 1;
+};
+//man movement
+Man.prototype.fall = function() {
+    this.y += this.speed;
+    this.speed += this.acc;
+    if (this.y > bottom) {
+        this.y = bottom;
+        this.x --;
+        if (this.x <= 0) {
+            this.x = 0;
+        }
+    }
+};
+Man.prototype.jump = function() {
+    if (this.y >= bottom) {
+        this.speed = -14.5;
+    }
+};
+Man.prototype.goRight = function() {
+    this.x += 4;
+    if (this.x > width * 3/4) {
+        this.x = width * 3/4;
+    }
+};
+Man.prototype.goLeft = function() {
+    this.x -= 4;
+    if (this.x < 0) {
+        this.x = 0;
+    }
+};
+}
+/*some  code*/{
+    var player = new Man(width/2, height/2, color(117, 94, 0), "boaz"/*<- please enter your name*/);
+var dusty = new Dust(width,266, random(10, 20));
+var spikes = [];
+for (var i = 0;i < 25;i ++) {
+    spikes.push(new Spike(i * 25, 420));
+}
+}
+/*draw and things like that*/{
+
+var drawLevel = function() {
+    background(117, 255, 246);
+    fill(255, 255, 0);
+    //sun
+    ellipse(width - 454,height-396, 33,33);
+    //ground
+    fill(112, 80, 0);
+    rect(0, height - 30, width, 30);
+    fill(21, 255, 0);
+    rect(0, height - 43, width, 14);
+    fill(10, 120, 0);
+    rect(0, height- 43, width, 3);
+    //score
+    textSize(20);
+    text("score: "+floor(score),width/2, 100);
+    score += 0.01;
+    var heart = "❤";
+    for (var i = 0;i < player.lives;i ++) {
+        text(heart,252 + (i * 25), 136);
+    } 
+    //text(heart + player.lives,314,136);
+    //spikes
+    for (var i = 0;i < spikes.length;i ++) {
+        spikes[i].draw();
+        spikes[i].goLeft();
+        if (spikes[i].collide(player.x,player.y,player.width,player.height)) {
+            spikes[i].isOut = false;
+            player.hit();
+        }
+    }
+    dusty.draw();
+    dusty.goLeft();
+    if (dusty.collide(player.x,player.y,player.width,player.height)) {
+        dusty = new Dust(width,266, random(10, 20));
+        player.hit();
+    }
+    player.draw();
+    player.fall();
+    if (keys[LEFT]) {
+        player.goLeft();
+    }
+    if (keys[RIGHT]) {
+        player.goRight();
+    }
+    if (keys[UP]) {
+        player.jump();
+    }
+};
+keyPressed = function(){
+    keys[keyCode] = true;
+};
+keyReleased = function(){
+    keys[keyCode] = false;
+};}
+
+frameRate(60);
+draw = function() {
+    if (player.lives > 0) {
+        drawLevel();
+    }
+    else {
+        dead();
+    }
+};
+
+            }
+            if (typeof draw !== 'undefined') processing.draw = draw;
+        });
+    </script>
+</body>
+
+</html>
