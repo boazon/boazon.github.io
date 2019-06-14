@@ -1,1 +1,191 @@
-n
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Multiplication Rabbit!!!</title>
+    <!--script src="http://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script-->
+    <script src="processing.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var processing = new Processing(canvas, function (processing) {
+            processing.size(1000, 1000);
+            processing.background(0xFFF);
+            var mouseIsPressed = false;
+            processing.mousePressed = function () { mouseIsPressed = true; };
+            processing.mouseReleased = function () { mouseIsPressed = false; };
+            var keyIsPressed = false;
+            processing.keyPressed = function () { keyIsPressed = true; };
+            processing.keyReleased = function () { keyIsPressed = false; };
+            function getImage(s) {
+                var url = "https://www.kasandbox.org/programming-images/" + s + ".png";
+                processing.externals.sketch.imageCache.add(url);
+                return processing.loadImage(url);
+            }
+            // use degrees rather than radians in rotate function
+            var rotateFn = processing.rotate;
+            processing.rotate = function (angle) {
+                rotateFn(processing.radians(angle));
+            };
+
+            var arcFn = processing.arc;
+            processing.arc = function (x, y, w, h, start, stop) {
+                arcFn(x, y, w, h, processing.radians(start), processing.radians(stop));
+            };
+
+
+            //processing.arc = function(x, y, radius, start)
+            with (processing) {
+               
+
+var coins = [floor(random(2,9)),floor(random(3,8)),floor(random(2,9))],
+turn = 0,
+gameOver = false,
+coinSize = 27,
+space = 7,
+leftCoin = 30,
+topCoin = 200,
+selectedrow=-1,
+selectedcol=0,
+bgColor = color(179, 118, 13);
+/** defining the class "Button" **/
+var Button = function(x, y, text, textSize, color) {
+    this.x = x;
+    this.y = y;
+    //this.x = random(400);
+    //this.y = random(400);
+    this.width = 56;
+    this.height = 54;
+    this.text = text;
+    this.textSize = textSize;
+    this.color = color;
+};
+
+Button.prototype.draw = function() {
+    noStroke();
+    fill(this.color);
+    rect(this.x, this.y, this.width, this.height, 10);
+    fill(0, 0, 0);
+    textSize(this.textSize);
+    text(this.text, this.x + 1, this.y + 33);
+};
+
+Button.prototype.isClicked = function() {
+    return ((mouseX > this.x) &&
+            (mouseX < this.x + this.width) &&
+            (mouseY > this.y) &&
+            (mouseY < this.y + this.height));
+};
+
+var go = new Button(450,200,"go", 46,color(51, 255, 0));
+var drawBoard = function() {
+    background(bgColor);
+    fill(0, 0, 0);
+    textSize(40);
+    for (var line = 0;line < coins.length;line ++) {
+        fill(0, 0, 0);
+        text(coins[line], 355, 210 + line * 34);
+        for (var j = 0;j < coins[line];j ++) {
+            if (line === selectedrow && j >= selectedcol && selectedcol>=0) {
+                fill(255, 0, 0);
+            }
+            ellipse(leftCoin + j * (coinSize + space),
+            topCoin +line * (coinSize + space),coinSize, coinSize); 
+        }
+    }
+    textSize(29);
+    text("Player: "+str(turn+1),109,101);
+    go.draw();
+};
+
+var isGameOver = function() {
+    var over = true;
+    for (var i = 0;i < coins.length;i ++) {
+        if (coins[i] !== 0) {
+            over = false;
+            break;
+        }
+    }
+    return over;
+};
+
+var drawGameOver = function() {
+    background(133, 82, 0);
+    text("player " + str(turn + 1) + " won", 200, 200);
+    
+};
+
+/*var isGameOver = function() {
+    for (var i = 0;i < coins.length;i ++) {
+        if (coins[i] !== 0) {
+            return false;
+        }
+    }
+    
+    return true;
+};*/
+
+mouseClicked = function() {
+    
+    
+    if (go.isClicked() && selectedrow>=0 && selectedcol>=0) {
+          
+         coins[selectedrow] = selectedcol;
+         
+         // check winning
+         if (isGameOver()) {
+             gameOver = true;
+             return;
+         }
+         //turn = (turn + 1) % 2;
+         turn += 1;
+         if (turn === 2) {
+             turn = 0;
+         }
+         selectedcol = -1;
+    
+    }
+    
+    
+    // calculate the row and column of the click
+    // you need to use the mouseX and mouseY, and take into account the start point and the width
+    // for example
+    // row index = (mouseY - y of top coin)/(height of coin + space)
+    var row = round((mouseY - topCoin)/(coinSize + space));
+    var col = round((mouseX - leftCoin)/(coinSize + space));
+    
+    if (row >= 0 && row < coins.length && col >= 0 && col < coins[row]) {
+         
+         selectedrow = row;
+         selectedcol = col;
+         
+       
+    }
+    
+    /*
+    fill(255, 255, 255);
+    rect(0, 141,600,50);
+    fill(255, 0, 0);
+    text(row,200,167);*/
+};
+
+frameRate(60);
+draw = function() {
+    if (gameOver) {
+        drawGameOver();
+    }
+    else {
+        drawBoard();
+    }
+};
+                };
+            }
+            if (typeof draw !== 'undefined') processing.draw = draw;
+        });
+    </script>
+</body>
+
+</html>
