@@ -36,12 +36,12 @@
                 arcFn(x, y, w, h, processing.radians(start), processing.radians(stop));
             };
 
-            processing.getAudio = function(filename) {
+            processing.getSound = function(filename) {
                 return new Audio(filename);
             }
 
-            processing.playAudio = function(a) {
-                a.play();  
+            processing.playSound = function(sound) {
+                sound.play();  
             }
 
             
