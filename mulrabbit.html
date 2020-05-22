@@ -37,16 +37,18 @@
             };
 
             processing.getSound = function(filename) {
-                return new Audio(filename + ".mp3");
+                return new Audio(filename);
             }
 
-            processing.playSound = function(s) {
-                s.play();  
+            processing.playSound = function(sound) {
+                sound.play();  
             }
-
-            
-            //processing.arc = function(x, y, radius, start)
+                                    //processing.arc = function(x, y, radius, start)
+                                    
             with (processing) {
+
+                var scaling = Math.min(window.innerWidth / 600, window.innerHeight / 600);
+                scale(scaling);
                 /** 
 my first game,multiplication rabbit!
 you are supposed to see a number and the multiplication table(without some of the numbers.)
@@ -66,8 +68,8 @@ and also,don't change the code!
                         text(i * j, i * 40 + 15, j * 30 + 20);
                     },
                     textF = createFont("fantasy"),
-                    badSound = getSound("battle-magic"),
-                    goodSound = getSound("coin"),
+                    badSound = getSound("rpg/battle-magic"),
+                    goodSound = getSound("retro/coin"),
                     started = false,
                     textColor = color(112, 22, 108),
                     lastCol = -1,
@@ -132,8 +134,8 @@ and also,don't change the code!
                     if (life < 1) {
                         return;
                     }
-                    var col = floor(mouseX / 40);
-                    var row = floor(mouseY / 30);
+                    var col = floor(mouseX / (40 * scaling));
+                    var row = floor(mouseY / (30 * scaling));
                     if (col < 1 || col > l || row < 1 || row > l) {
                         return;
                     }
@@ -156,7 +158,6 @@ and also,don't change the code!
                     }
                 };
                 draw = function () {
-
                     if (started) {
                         life = 3;
                         draw = function () {
