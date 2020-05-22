@@ -39,142 +39,176 @@
 
             //processing.arc = function(x, y, radius, start)
             with (processing) {
+                /** 
+my first game,multiplication rabbit!
+you are supposed to see a number and the multiplication table(without some of the numbers.)
+you need to find the number on the board.
+try to find a lot of numbers before the rabbit reaches the end 3 times!(the game is endless if you won't fail).
+and also,don't change the code!
+**/
+
+                /* do not change */
                 var ranking = [
-                    { name: "boazon", score: 2621, medel: "gold" },
-                    { name: "dad", score: 439, medel: "silver" },
-                    { name: "mom", score: 393, medel: "bronze" }
-                ];
-                var writeProduct = function (i, j) {
-                    text(i * j, i * 40 + 15, j * 30 + 20);
-                };
-                var textColor = color(112, 22, 108);
-                var lastCol = 1;
-                var lastRow = 1;
-                var l = 10;
-                var a = floor(random(2, l));
-                var b = floor(random(2, l));
-                var score = 0;
-                var life = 3;
+                    { name: "boazon", score: 2621, medal: "platinum" },
+                    { name: "my dad", score: 596, medal: "gold" },
+                    { name: "???", score: "???", medal: "silver" },
+                    { name: "???", score: "???", medal: "bronze" }
+                ],
+                    writeProduct = function (i, j) {
+                        text(i * j, i * 40 + 15, j * 30 + 20);
+                    },
+                    textF = createFont("fantasy"),
+                    badSound = getSound("rpg/battle-magic"),
+                    goodSound = getSound("retro/coin"),
+                    started = false,
+                    textColor = color(112, 22, 108),
+                    lastCol = -1,
+                    lastRow = -1,
+                    l = 10,
+                    a = floor(random(2, l)),
+                    b = floor(random(2, l)),
+                    score = 0,
+                    life = 0;
 
-                var rabbit = function (x, y, size) {
-                    /**fill(107, 71, 0);
-                    ellipse(x, y, size, 22);
-                    stroke(5, 2, 5);
-                    strokeWeight(5);
-                    point(x + size-83,y - size/20);
-                    strokeWeight(1);
-                    stroke(0, 0, 0);
-                    fill(255, 255, 255, 250);**/
-
+                var rabbit = function (x, y) {
                     fill(255, 255, 255);
                     arc(x + 4, y + 80, 30, 30, -4, 288);
                     noFill();
                     image(getImage("creatures/Winston"), x, y, 100, 100);
+                    //left ear
                     arc(x + 15, y - 3, 30, -30, 180, 360);
                     arc(x + 11, y - 3, 23, -77, 100, 180);
                     arc(x + 18, y + -1, 24, -86, 3, 92);
                     arc(x + 14.5, y - 42, 10, 10, 180, 360);
+                    noStroke();
+                    fill(255, 184, 250);
+                    ellipse(x + 14, y - 18, 14, 35);
+                    stroke(0, 0, 0);
+                    fill(255, 255, 255);
                     //right ear
                     arc(x + 89, y - 3, 30, -30, 180, 360);
                     arc(x + 85, y - 3, 23, -77, 100, 180);
                     arc(x + 92, y + -1, 24, -86, 3, 92);
                     arc(x + 88.5, y - 42, 10, 10, 180, 360);
-
-                    fill(255, 184, 250);
                     noStroke();
-                    ellipse(x + 14, y - 18, 14, 35);
-                    //right ear
+                    fill(255, 184, 250);
                     ellipse(x + 88, y - 18, 14, 35);
-                    fill(0, 0, 0);
+                    fill(255, 255, 255);
                     stroke(0, 0, 0);
-
                 };
-                var scaling = 1.5;
-                scale(scaling, scaling);
                 var rabbitx = -1;
-                var w;
+                var answer;
+                var drawHearts = function (x, y) {
+                    image(getImage("space/healthheart"), x, y, 30, 30);
+                };
                 var death = function () {
                     draw = function () {
                         background(255, 0, 0);
                         fill(255, 255, 255);
                         textSize(30);
-                        text("game                  Over\nyour score was: " + score, width / 4, 200, 500, 237);
+                        text("Game                          Over\n         your score was: " + (score + 1), 90, 406, 500, 237);
                         textSize(15);
                         for (var j = 0; j < ranking.length; j++) {
-                            //for (var i = 0;i < ranking[j].medel; i++) {
-                            text("name:" + ranking[j].name + ",\nscore:" + ranking[j].score + ",\nmedal:" + ranking[j].medel + ".\n", 231, j * 69 + 30);
-                            //}
+
+                            text("name:" + ranking[j].name + ",\nscore:" + ranking[j].score + ",\nmedal:" + ranking[j].medal + ".\n", 231, j * 69 + 30);
+
 
                         }
                     };
                 };
                 mouseClicked = function () {
-                    var x = mouseX / scaling;
-                    var y = mouseY / scaling;
+                    if (started === false) {
+                        started = true;
 
-                    var col = floor(x / 40);
-                    var row = floor(y / 30);
-                    if (col <= l && col >= 1 && row <= l && row >= 1) {
-                        lastCol = col;
-                        lastRow = row;
+                    }
+                    if (life < 1) {
+                        return;
+                    }
+                    var col = floor(mouseX / 40);
+                    var row = floor(mouseY / 30);
+                    if (col < 1 || col > l || row < 1 || row > l) {
+                        return;
                     }
 
-                    console.log("lastCol=" + lastCol + " lastRow=" + lastRow + " answer=" + answer);
+                    lastCol = col;
+                    lastRow = row;
+
                     if (lastCol * lastRow === answer) {
                         rabbitx = -50;
                         a = floor(random(1, l));
                         b = floor(random(1, l));
                         score += 10;
-                        textColor = color(34, 255, 0);
-                        var audio = new Audio('coin-jingle.mp3');
-                        audio.play();
-                        
+                        textColor = color(0, 43, 255);
+                        playSound(goodSound);
                     }
                     else {
                         textColor = color(255, 0, 0);
                         score -= 1;
-                        var audio = new Audio('battle-magic.mp3');
-                        audio.play();
+                        playSound(badSound);
                     }
                 };
                 draw = function () {
-                    background(255, 255, 255);
-                    for (var j = 1; j <= l; j++) {
-                        for (var i = 1; i <= l; i++) {
-                            fill(201, 209, 39);
-                            rect(i * 40, j * 30, 40, 30);
-                            fill(112, 22, 108);
-                            if (j === 1 || i === 1) {
-                                writeProduct(i, j);
-                            }
-                        }
 
+                    if (started) {
+                        life = 3;
+                        draw = function () {
+                            textSize(12);
+                            textFont(createFont("sans-serif"));
+                            if (life < 1) {
+                                death();
+                            }
+                            else {
+                                background(255, 255, 255);
+                                for (var j = 1; j <= l; j++) {
+                                    for (var i = 1; i <= l; i++) {
+                                        fill(201, 209, 39);
+                                        rect(i * 40, j * 30, 40, 30);
+                                        fill(112, 22, 108);
+                                        if (j === 1 || i === 1) {
+                                            writeProduct(i, j);
+                                        }
+                                    }
+                                }
+
+                                rabbit(rabbitx, 487, 20);
+                                answer = a * b;
+                                rabbitx += 1;
+                                if (rabbitx >= 650) {
+                                    playSound(badSound);
+                                    rabbitx = -50;
+                                    a = floor(random(1, l));
+                                    b = floor(random(1, l));
+                                    score--;
+                                    life -= 1;
+                                }
+
+                                fill(0);
+                                textSize(30);
+                                text("Find the number: " + a * b, 48, 372);
+                                textSize(12);
+                                fill(textColor);
+                                writeProduct(lastCol, lastRow);
+                                fill(0, 0, 0);
+                                textSize(28);
+                                text("Score: " + score, 47, 448);
+                                for (var g = 0; g < life; g++) {
+                                    drawHearts(g * 34 + 48, 392);
+                                }
+
+                                textSize(12);
+                            }
+                        };
                     }
-                    //Program.restart();
-                    rabbit(rabbitx, 487, 79);
-                    answer = a * b;
-                    //keyPressed = function() {
-                    rabbitx += 1;
-                    if (rabbitx >= 450) {
-                        rabbitx = -50;
-                        a = floor(random(1, l));
-                        b = floor(random(1, l));
-                        score--;
-                        life -= 1;
-                    }
-                    //};
-                    fill(0);
-                    textSize(30);
-                    text(answer, 374, 372);
-                    textSize(12);
-                    fill(textColor);
-                    writeProduct(lastCol, lastRow);
-                    fill(0, 0, 0);
-                    textSize(16);
-                    text("Score: " + score + "\n\nLives:" + life, 50, 362);
-                    textSize(12);
-                    if (life < 1) {
-                        death();
+
+                    else {
+                        background(143, 143, 143);
+                        fill(92, 92, 92);
+                        textFont(textF);
+                        textSize(15);
+                        text("click anywhere to start", 258, 428);
+                        textSize(85);
+                        text("MULTIPLICATION", 47, 200);
+                        text("RABBIT", 186, 285);
                     }
                 };
             }
