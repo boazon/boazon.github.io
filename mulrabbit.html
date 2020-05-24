@@ -37,18 +37,19 @@
             };
 
             processing.getSound = function(filename) {
-                return new Audio(filename);
+                return new Audio(filename + ".mp3");
             }
 
             processing.playSound = function(sound) {
                 sound.play();  
             }
                                     //processing.arc = function(x, y, radius, start)
-                                    
+
+            var scaling = Math.min(window.innerWidth / 600, window.innerHeight / 600);
+            processing.scale(scaling);
+
             with (processing) {
 
-                var scaling = Math.min(window.innerWidth / 600, window.innerHeight / 600);
-                scale(scaling);
                 /** 
 my first game,multiplication rabbit!
 you are supposed to see a number and the multiplication table(without some of the numbers.)
